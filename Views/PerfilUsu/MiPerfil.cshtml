@@ -1,0 +1,14 @@
+@{
+    ViewData["Title"] = "Completa tu perfil";
+}
+
+<h2>¿Cómo quieres que te vean?</h2>
+
+<form asp-action="CompletarPerfil" method="post">
+    <div class="mb-3">
+        <label class="form-label">Nombre a mostrar</label>
+        <input type="text" name="nomPerfil" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Continuar</button>
+</form>

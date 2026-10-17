@@ -1,0 +1,20 @@
+@model stoiko3.Models.RegistroEntrenamientoViewModel
+
+<h2>Registrar entrenamiento de hoy</h2>
+
+<form asp-action="Registrar" method="post">
+    @for (int i = 0; i < Model.Ejercicios.Count; i++)
+    {
+        <div class="form-check mb-2 d-flex align-items-center gap-2">
+            <input type="hidden" asp-for="Ejercicios[i].IdEjercicio" />
+            <input type="hidden" asp-for="Ejercicios[i].NomEjercicio" />
+
+            <input type="checkbox" asp-for="Ejercicios[i].Seleccionado" class="form-check-input" />
+            <label class="form-check-label">@Model.Ejercicios[i].NomEjercicio</label>
+
+            <input type="number" asp-for="Ejercicios[i].Repeticiones" class="form-control" style="width:100px" min="0" placeholder="Reps" />
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary mt-3">Guardar entrenamiento</button>
+</form>

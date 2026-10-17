@@ -1,0 +1,1308 @@
+@{
+    ViewData["Title"] = "STOIKO - Iniciar Sesión";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0b0d10;
+            --bg-card: #14171d;
+            --bg-input: #1c2029;
+            --bg-card-hover: #1c2029;
+            --orange-primary: #FF5500;
+            --orange-hover: #E04B00;
+            --orange-glow: rgba(255, 85, 0, 0.25);
+            --text-main: #FFFFFF;
+            --text-muted: #94A3B8;
+            --border-color: #222732;
+            --error-color: #FF4D4D;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* HEADER */
+        .stoiko-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 3rem;
+            background-color: rgba(11, 13, 16, 0.9);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stoiko-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: var(--orange-primary);
+            text-transform: uppercase;
+            text-decoration: none;
+            text-shadow: 0 0 12px var(--orange-glow);
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-stoiko-primary {
+            background-color: var(--orange-primary);
+            color: #FFFFFF;
+            padding: 0.65rem 1.6rem;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-decoration: none;
+            box-shadow: 0 4px 15px var(--orange-glow);
+            transition: all 0.3s ease;
+        }
+
+        .btn-stoiko-primary:hover {
+            background-color: var(--orange-hover);
+            transform: translateY(-2px);
+        }
+
+        .stoiko-container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+            position: relative;
+        }
+
+        /* BOTÓN FLOTANTE PARA DESOCULTAR MENÚ */
+        .floating-toggle-btn {
+            display: none;
+            position: fixed;
+            top: 95px;
+            left: 20px;
+            z-index: 999;
+            background-color: var(--bg-card);
+            border: 1.5px solid var(--orange-primary);
+            color: var(--text-main);
+            padding: 0.65rem 1.2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6), 0 0 12px var(--orange-glow);
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.3s ease;
+        }
+
+        .floating-toggle-btn:hover {
+            background-color: var(--orange-primary);
+            color: #ffffff;
+        }
+
+        .floating-toggle-btn.visible {
+            display: inline-flex;
+        }
+
+        /* SIDEBAR PRO DESLIZABLE Y COLAPSABLE */
+        .scrum-sidebar {
+            width: 280px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 950;
+        }
+
+        .scrum-sidebar.collapsed {
+            margin-left: -280px;
+        }
+
+        .scrum-sidebar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sidebar-top {
+            padding: 1.5rem 0;
+        }
+
+        .toggle-sidebar-btn {
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin: 0 1rem 1.2rem 1rem;
+            transition: all 0.3s ease;
+            width: calc(100% - 2rem);
+            justify-content: center;
+        }
+
+        .toggle-sidebar-btn:hover {
+            border-color: var(--orange-primary);
+            color: var(--orange-primary);
+            box-shadow: 0 0 12px var(--orange-glow);
+        }
+
+        .scrum-sidebar-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1.5px;
+            font-weight: 800;
+            padding: 0 1.5rem;
+            margin-bottom: 0.8rem;
+            display: block;
+        }
+
+        .scrum-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            padding: 0 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .scrum-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            padding: 0.85rem 1.2rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .scrum-menu-item i {
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+
+        .scrum-menu-item:hover {
+            background-color: var(--bg-card-hover);
+            color: var(--text-main);
+        }
+
+        .scrum-menu-item:hover i {
+            color: var(--orange-primary);
+        }
+
+        .scrum-menu-item.active {
+            background-color: var(--orange-primary);
+            color: #FFFFFF;
+            box-shadow: 0 4px 15px var(--orange-glow);
+        }
+
+        .scrum-menu-item.active i {
+            color: #FFFFFF;
+        }
+
+        .profile-details {
+            background-color: #0f1115;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+
+        .profile-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-avatar {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--orange-primary), var(--orange-hover));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .profile_name {
+            color: var(--text-main);
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .job {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .log_out {
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            text-decoration: none;
+        }
+
+        .log_out:hover {
+            color: var(--orange-primary);
+        }
+
+        /* ÁREA DE CONTENIDO PRINCIPAL */
+        .content-area {
+            flex: 1;
+            padding: 2.5rem;
+            width: 100%;
+            margin: 0 auto;
+            transition: all 0.35s ease;
+        }
+
+        /* GRID DIVIDIDO EN 2 */
+        .split-login-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+            min-height: calc(100vh - 180px);
+            align-items: stretch;
+        }
+
+        .design-slot {
+            background-color: var(--bg-card);
+            border: 2px dashed rgba(255, 85, 0, 0.35);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            text-align: center;
+            color: var(--text-muted);
+            height: 100%;
+        }
+
+        .design-slot i {
+            font-size: 4rem;
+            color: var(--orange-primary);
+            opacity: 0.7;
+            margin-bottom: 1.2rem;
+        }
+
+        .login-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            padding: 3.5rem 3rem;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+
+        .brand-header {
+            text-align: center;
+            margin-bottom: 2.2rem;
+        }
+
+        .brand-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 1.2rem;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            pointer-events: none;
+        }
+
+        .form-control {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1.5px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.05rem 1.2rem 1.05rem 3.2rem;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--orange-primary);
+            box-shadow: 0 0 15px var(--orange-glow);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--orange-primary);
+            color: #FFFFFF;
+            border: none;
+            padding: 1.1rem;
+            border-radius: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px var(--orange-glow);
+            transition: all 0.3s ease;
+            margin-top: 0.8rem;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--orange-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-google {
+            width: 100%;
+            background-color: var(--bg-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 1rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .btn-google:hover {
+            border-color: var(--orange-primary);
+            background-color: var(--bg-card-hover);
+            color: var(--text-main);
+        }
+
+        .divider {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin: 1.8rem 0 0.8rem 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .alert-error {
+            background-color: rgba(255, 77, 77, 0.15);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .card-footer-text {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .card-footer-text a {
+            color: var(--orange-primary);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        /* SECCIÓN TARJETAS EXTRA GRANDES */
+        .about-section {
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.6rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            max-width: 950px;
+            margin: 0 auto 3.5rem auto;
+            font-size: 1.2rem;
+            line-height: 1.7;
+        }
+
+        /* TARJETAS MÁS GRANDES EN EL GRID (520px MÍNIMO) */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .info-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 26px;
+            overflow: hidden;
+            transition: all 0.35s ease;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        .info-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--orange-primary);
+            box-shadow: 0 25px 50px var(--orange-glow);
+        }
+
+        /* ALTURA DE IMAGEN AUMENTADA A 420px */
+        .card-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 420px;
+            overflow: hidden;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.85);
+            transition: transform 0.5s ease, filter 0.3s ease;
+        }
+
+        .info-card:hover .card-image {
+            transform: scale(1.05);
+            filter: brightness(1);
+        }
+
+        .double-click-hint {
+            position: absolute;
+            bottom: 18px;
+            right: 18px;
+            background: #0b0d10 !important;
+            color: #FFFFFF !important;
+            font-size: 0.9rem;
+            padding: 0.55rem 1.1rem;
+            border-radius: 10px;
+            border: 1.5px solid var(--orange-primary);
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.8);
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+        }
+
+        .double-click-hint i {
+            color: #FFFFFF !important;
+        }
+
+        .card-body {
+            padding: 2.8rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-body h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1.1rem;
+            text-transform: uppercase;
+            color: #FFFFFF !important;
+        }
+
+        .card-body p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            line-height: 1.75;
+        }
+
+        /* DETAILED INFO SECTION */
+        .detailed-info-section {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 26px;
+            padding: 4.5rem 4rem;
+            margin-top: 3rem;
+            margin-bottom: 4rem;
+        }
+
+        .info-block-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 3rem;
+            margin-top: 2.8rem;
+        }
+
+        .info-block-item h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--orange-primary);
+            margin-bottom: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .info-block-item p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.75;
+        }
+
+        /* MODAL FLIP 3D AMPLIADO PARA DOBLE CLIC */
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.94);
+            backdrop-filter: blur(14px);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 2.5rem;
+            perspective: 1400px;
+        }
+
+        .image-modal.active {
+            display: flex;
+        }
+
+        .modal-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(20, 23, 29, 0.9);
+            color: #FFFFFF;
+            border: 2px solid var(--orange-primary);
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 2100;
+            box-shadow: 0 0 25px var(--orange-glow);
+        }
+
+        .modal-nav-btn:hover {
+            background-color: var(--orange-primary);
+            color: #FFFFFF;
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .modal-nav-prev { left: 35px; }
+        .modal-nav-next { right: 35px; }
+
+        /* VISTA AMPLIADA DE LA TARJETA AL DAR DOBLE CLIC */
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            max-width: 1150px;
+            min-height: 720px;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .flip-card-inner.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 28px;
+            border: 2.5px solid var(--orange-primary);
+            background-color: var(--bg-card);
+            box-shadow: 0 0 60px var(--orange-glow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+            padding: 4rem 3.5rem;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, var(--bg-card) 0%, #1a1e27 100%);
+        }
+
+        .modal-img-container {
+            width: 100%;
+            height: 480px;
+            overflow: hidden;
+        }
+
+        .modal-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-text-container {
+            padding: 2.5rem;
+            background-color: var(--bg-card);
+            flex: 1;
+        }
+
+        .modal-text-container h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.1rem;
+            font-weight: 900;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            margin-bottom: 0.9rem;
+        }
+
+        .modal-text-container p {
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            line-height: 1.75;
+        }
+
+        .btn-flip-trigger {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-top: 1.2rem;
+            background-color: #0b0d10;
+            color: #FFFFFF !important;
+            border: 1.5px solid var(--orange-primary);
+            padding: 0.75rem 1.6rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-flip-trigger:hover {
+            background-color: var(--orange-primary);
+            color: #FFFFFF !important;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            color: #FFFFFF;
+            font-size: 2.8rem;
+            cursor: pointer;
+            z-index: 2200;
+        }
+
+        .modal-counter {
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 600;
+            z-index: 2100;
+            background: rgba(11, 13, 16, 0.85);
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .react-bits-section {
+            background: linear-gradient(180deg, var(--bg-card) 0%, rgba(255,85,0,0.06) 100%);
+            border: 1px dashed var(--orange-primary);
+            border-radius: 20px;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .react-bits-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: rgba(255, 85, 0, 0.15);
+            color: var(--orange-primary);
+            padding: 0.5rem 1.4rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+        }
+
+        #react-bits-root {
+            margin-top: 2rem;
+        }
+
+        @@media (max-width: 900px) {
+            .split-login-section {
+                grid-template-columns: 1fr;
+            }
+            .design-slot {
+                display: none;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .scrum-sidebar {
+                position: fixed;
+                height: 100vh;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="stoiko-header">
+        <a asp-controller="Home" asp-action="Index" class="stoiko-brand">STOIKO</a>
+
+        <div class="auth-buttons">
+            <a asp-controller="Usuario" asp-action="Create" class="btn-stoiko-primary">Crear cuenta</a>
+        </div>
+    </header>
+
+    <!-- BOTÓN FLOTANTE PARA VOLVER A DESOCULTAR / MOSTRAR EL MENÚ CUANDO ESTÁ OCULTO -->
+    <button class="floating-toggle-btn" id="floatingToggleBtn">
+        <i class="bi bi-layout-sidebar"></i>
+        <span>Mostrar Menú</span>
+    </button>
+
+    <div class="stoiko-container">
+
+        <aside class="scrum-sidebar" id="scrumSidebar">
+            <div class="sidebar-top">
+                <button class="toggle-sidebar-btn" id="toggleSidebarBtn">
+                    <i class="bi bi-layout-sidebar"></i>
+                    <span id="toggleText">Ocultar Menú</span>
+                </button>
+
+                <span class="scrum-sidebar-title">Dashboard</span>
+                <nav class="scrum-menu">
+                    <a href="#login" class="scrum-menu-item active">
+                        <i class="bi bi-grid-fill"></i> Loggin
+                    </a>
+                    <a asp-controller="Usuario" asp-action="Login" class="scrum-menu-item">
+                        <i class="bi bi-house-door-fill"></i> Inicio
+                    </a>
+                </nav>
+
+                <span class="scrum-sidebar-title">Entrenamiento</span>
+                <nav class="scrum-menu">
+                    <a href="#ejercicios" class="scrum-menu-item">
+                        <i class="bi bi-lightning-charge-fill"></i> Ejercicios
+                    </a>
+                    <a href="#musculos" class="scrum-menu-item">
+                        <i class="bi bi-diagram-3-fill"></i> Grupos Musculares
+                    </a>
+                    <a href="#divisiones" class="scrum-menu-item">
+                        <i class="bi bi-collection-fill"></i> Divisiones
+                    </a>
+                </nav>
+
+                <span class="scrum-sidebar-title">Rendimiento</span>
+                <nav class="scrum-menu">
+                    <a href="#registros" class="scrum-menu-item">
+                        <i class="bi bi-journal-check"></i> Historial
+                    </a>
+                    <a href="#progreso" class="scrum-menu-item">
+                        <i class="bi bi-bar-chart-line-fill"></i> Progreso
+                    </a>
+                </nav>
+
+                <span class="scrum-sidebar-title">Sistema</span>
+                <nav class="scrum-menu">
+                    <a href="#react-bits" class="scrum-menu-item">
+                        <i class="bi bi-cpu-fill"></i> React Bits
+                    </a>
+                </nav>
+            </div>
+
+            <div class="profile-details">
+                <div class="profile-content">
+                    <div class="profile-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <div class="name-job">
+                        <div class="profile_name">Usuario</div>
+                        <div class="job">Nivel 1 • Atleta</div>
+                    </div>
+                </div>
+                <a asp-controller="Home" asp-action="bienvenida" class="log_out" title="Cerrar sesión">
+                    <i class="bi bi-box-arrow-right"></i>
+                </a>
+            </div>
+        </aside>
+
+        <main class="content-area">
+
+            <!-- PANTALLA DIVIDIDA CON MAYOR ESPACIO -->
+            <section id="login" class="split-login-section">
+
+                <!-- LADO IZQUIERDO -->
+                <div class="design-slot">
+                    <i class="bi bi-palette-fill"></i>
+                    <p style="font-size: 1.25rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.6rem;">Espacio reservado para tu diseño</p>
+                    <p style="font-size: 0.95rem; max-width: 400px;">Aquí puedes incorporar tus componentes, modelos 3D, animaciones o gráficos personalizados.</p>
+                </div>
+
+                <!-- LADO DERECHO: FORMULARIO -->
+                <div class="login-card">
+
+                    <div class="brand-header">
+                        <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.4rem; font-weight: 900; color: var(--text-main); text-transform: uppercase;">Iniciar Sesión</h2>
+                        <p class="brand-subtitle">Ingresa tus credenciales y demuestra tu disciplina</p>
+                    </div>
+
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert-error">
+                            <i class="bi bi-exclamation-triangle-fill"></i> @ViewBag.ErrorMessage
+                        </div>
+                    }
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <form asp-controller="Home" asp-action="Index" method="post" id="loginForm">
+
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <div class="input-wrapper">
+                                <input type="email" id="email" name="email" class="form-control" placeholder="ejemplo@stoiko.com" required />
+                                <i class="bi bi-envelope-fill input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <div class="input-wrapper">
+                                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required />
+                                <i class="bi bi-lock-fill input-icon"></i>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-submit">Ingresar</button>
+
+                    </form>
+
+                    <div class="divider">— o —</div>
+
+                    <a href="/Usuario/LoginGoogle" class="btn-google">
+                        <svg width="22" height="22" viewBox="0 0 18 18">
+                            <path fill="#4285F4" d="M17.64 9.2c0-.74-.06-1.28-.19-1.84H9v3.34h4.96c-.1.83-.64 2.08-1.84 2.92l2.84 2.2c1.7-1.57 2.68-3.88 2.68-6.62z" />
+                            <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.84-2.2c-.76.53-1.78.9-3.12.9-2.38 0-4.41-1.57-5.13-3.74L.97 13.04C2.45 15.98 5.48 18 9 18z" />
+                            <path fill="#FBBC05" d="M3.87 10.78c-.19-.58-.3-1.18-.3-1.78s.11-1.2.3-1.78L.97 4.96C.35 6.18 0 7.55 0 9s.35 2.82.97 4.04l2.9-2.26z" />
+                            <path fill="#EA4335" d="M9 3.58c1.32 0 2.5.46 3.44 1.34l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 2.02.97 4.96l2.9 2.26C4.59 5.05 6.62 3.58 9 3.58z" />
+                        </svg>
+                        Iniciar sesión con Google
+                    </a>
+
+                    <div class="card-footer-text">
+                        ¿No tienes una cuenta? <a asp-controller="Usuario" asp-action="Create">Regístrate aquí</a>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- SECCIÓN CON TARJETAS EXTRA GRANDES -->
+            <section class="about-section">
+                <h2 class="section-title">¿QUÉ ES <span style="color: var(--orange-primary);">STOIKO</span> Y CÓMO FUNCIONA?</h2>
+                <p class="section-subtitle">
+                    STOIKO es un sistema de gestión integral de entrenamiento enfocado en atletas que buscan dominar su disciplina a través de la constancia, el registro analítico de cargas y la sobrecarga progresiva.
+                </p>
+
+                <div class="cards-grid" id="cardsGrid">
+                    <!-- Tarjetas generadas dinámicamente -->
+                </div>
+            </section>
+
+            <!-- SECCIÓN DE INFORMACIÓN DETALLADA ABAJO -->
+            <section class="detailed-info-section">
+                <h3 style="font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 900; color: #FFFFFF; text-transform: uppercase; text-align: center;">
+                    ARQUITECTURA Y FILOSOFÍA DE ENTRENAMIENTO EN STOIKO
+                </h3>
+                <p style="text-align: center; color: var(--text-muted); margin-top: 0.5rem; font-size: 1.1rem;">
+                    Una vista profunda sobre la metodología de registro y la tecnología detrás de nuestra plataforma.
+                </p>
+
+                <div class="info-block-grid">
+                    <div class="info-block-item">
+                        <h4><i class="bi bi-cpu-fill"></i> Mapeo Automático en la Nube</h4>
+                        <p>Cada serie registrada se sincroniza en tiempo real con Supabase en infraestructura C# (.NET 8 MVC), permitiendo respaldar tus repeticiones y pesos máximos con cero riesgo de pérdida de datos.</p>
+                    </div>
+
+                    <div class="info-block-item">
+                        <h4><i class="bi bi-graph-up-arrow"></i> Algoritmos de Volumen Efectivo</h4>
+                        <p>STOIKO calcula el tonelaje diario acumulado (Series × Repeticiones × Peso) y filtra automáticamente las series de aproximación para darte una métrica limpia de tu volumen efectivo.</p>
+                    </div>
+
+                    <div class="info-block-item">
+                        <h4><i class="bi bi-shield-check"></i> Autorregulación y Prevención</h4>
+                        <p>A través de escalas de fatiga percibida, el sistema sugiere semanas de descarga (deload) para cuidar tus articulaciones y evitar sobreentrenamiento muscular.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECCIÓN DE REACT BITS HASTA ABAJO -->
+            <section id="react-bits" class="react-bits-section">
+                <div class="react-bits-badge">
+                    <i class="bi bi-stars"></i> Componentes Dinámicos
+                </div>
+                <h2 style="font-family: 'Montserrat', sans-serif; font-size: 2.4rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1rem;">
+                    Implementado con <span style="color: var(--orange-primary);">React Bits</span>
+                </h2>
+                <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto 1.5rem auto; font-size: 1.1rem;">
+                    Componentes interactivos de alta frecuencia renderizados dentro de tu infraestructura de C# / ASP.NET Core MVC.
+                </p>
+
+                <div id="react-bits-root"></div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- VENTANA MODAL FLIP 3D EXTRA GRANDE -->
+    <div id="imageModal" class="image-modal" onclick="closeModal()">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+
+        <button class="modal-nav-btn modal-nav-prev" onclick="event.stopPropagation(); prevCard();" title="Tarjeta Anterior">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <div class="flip-card-inner" id="flipCardInner" onclick="event.stopPropagation(); flipCard();">
+            <div class="flip-card-front">
+                <div class="modal-img-container">
+                    <img id="modalImg" src="" alt="Imagen Ampliada" />
+                </div>
+                <div class="modal-text-container">
+                    <h3 id="modalTitle"></h3>
+                    <p id="modalDesc"></p>
+                    <button class="btn-flip-trigger"><i class="bi bi-arrow-repeat"></i> Dar la vuelta para ver detalles estoicos</button>
+                </div>
+            </div>
+
+            <div class="flip-card-back">
+                <i class="bi bi-quote" style="font-size: 4rem; color: var(--orange-primary); opacity: 0.6;"></i>
+                <h3 id="modalBackTitle" style="font-family: 'Montserrat', sans-serif; font-size: 2.2rem; font-weight: 900; color: #FFFFFF; text-transform: uppercase; margin-bottom: 1.2rem;"></h3>
+                <p id="modalBackDetail" style="color: var(--text-main); font-size: 1.25rem; line-height: 1.85; max-width: 800px; margin-bottom: 2.5rem;"></p>
+                <button class="btn-flip-trigger" style="background-color: var(--orange-primary);"><i class="bi bi-arrow-return-left"></i> Volver al frente</button>
+            </div>
+        </div>
+
+        <button class="modal-nav-btn modal-nav-next" onclick="event.stopPropagation(); nextCard();" title="Siguiente Tarjeta">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+
+        <div class="modal-counter" id="modalCounter">1 / 8</div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const sidebar = document.getElementById("scrumSidebar");
+            const toggleBtn = document.getElementById("toggleSidebarBtn");
+            const floatingBtn = document.getElementById("floatingToggleBtn");
+            const toggleText = document.getElementById("toggleText");
+
+            function toggleMenuState() {
+                sidebar.classList.toggle("collapsed");
+                const isCollapsed = sidebar.classList.contains("collapsed");
+
+                if (isCollapsed) {
+                    toggleText.innerText = "Mostrar Menú";
+                    floatingBtn.classList.add("visible");
+                } else {
+                    toggleText.innerText = "Ocultar Menú";
+                    floatingBtn.classList.remove("visible");
+                }
+            }
+
+            toggleBtn.addEventListener("click", toggleMenuState);
+            floatingBtn.addEventListener("click", toggleMenuState);
+        });
+
+        const cardsData = [
+            {
+                img: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?auto=format&fit=crop&w=1200&q=80',
+                title: 'Sobrecarga Progresiva',
+                desc: 'Controla de forma exacta las repeticiones, kilajes y volumen acumulado por serie para garantizar adaptaciones musculares reales y constantes.',
+                backDetail: 'La clave de la sobrecarga progresiva estriba en superar pequeños umbrales cada semana. No se trata solo de añadir peso a la barra, sino de dominar la técnica, reducir los tiempos de descanso o realizar repeticiones con una fase excéntrica más controlada.'
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&w=1200&q=80',
+                title: 'Divisiones de Rutinas',
+                desc: 'Estructura tus sesiones en Push/Pull/Legs, Upper/Lower o rutinas personalizadas adaptadas a tus días de descanso e intensidad.',
+                backDetail: 'Elegir la división correcta optimiza la síntesis proteica en cada grupo muscular. Distribuir el volumen en una frecuencia 2 (entrenar cada músculo 2 veces por semana) minimiza la fatiga sistémica acumulada.'
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
+                title: 'Métricas y Rendimiento',
+                desc: 'Visualiza gráficos analíticos de tu progreso histórico en cada ejercicio para detectar estancamientos y ajustar tus variables.',
+                backDetail: 'Lo que no se mide no se puede mejorar. Analiza gráficos de tonelaje semanal para identificar estancamientos antes de que se traduzcan en frustración o sobreentrenamiento.'
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?auto=format&fit=crop&w=1200&q=80',
+                title: 'Registro de RPE y RIR',
+                desc: 'Evalúa la percepción de esfuerzo subjetivo (RPE) y las repeticiones en recámara (RIR) para autorregular la fatiga de tu sistema nervioso.',
+                backDetail: 'Un RPE 8 indica que podrías haber realizado 2 repeticiones más antes del fallo (RIR 2). Utilizar esta métrica te protege frente a días de alta carga cognitiva o mal descanso nocturno.'
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1517931524326-bdd55a541177?auto=format&fit=crop&w=1200&q=80',
+                title: 'Historial Centralizado',
+                desc: 'Accede rápidamente a bitácoras de entrenamiento de meses pasados y compara tus marcas máximas anteriores con las actuales.',
+                backDetail: 'Revisar la bitácora te brinda perspectiva histórica. Observar tus marcas de hace 6 meses es el mayor estímulo psicológico para confirmar que tu plan está dando frutos.'
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=1200&q=80',
+                title: 'Disciplina Estoica',
+                desc: 'Desarrolla el enfoque mental necesario para entrenar con propósito diario, transformando el esfuerzo sostenido en resultados tangibles.',
+                backDetail: '"No nos atrevemos a muchas cosas porque son difíciles, pero son difíciles porque no nos atrevemos a hacerlas." En STOIKO el enfoque se centra en lo que está bajo tu control absoluto: tu esfuerzo diario.'
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?auto=format&fit=crop&w=1200&q=80',
+                title: 'Periodización Inteligente',
+                desc: 'Alterna entre bloques de hipertrofia, fuerza máxima y semanas de descarga estratégica para prolongar tu longevidad deportiva.',
+                backDetail: 'La periodización por bloques organiza la temporada en microciclos específicos. Alternar estímulos maximiza la hipertrofia miofibrilar sin agotar tus reservas neuromusculares.'
+            },
+            {
+                img: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=80',
+                title: 'Nutrición & Recovery',
+                desc: 'Sincroniza tus macros, hidratación y horas de sueño profundo para permitir que tu cuerpo asimile el estímulo del entrenamiento.',
+                backDetail: 'El músculo no crece en el gimnasio, sino durante el descanso. Un superávit calórico controlado y la ingesta de 1.8 a 2.2g de proteína por kilo son pilares irrenunciables.'
+            }
+        ];
+
+        let currentCardIndex = 0;
+        let isFlipped = false;
+
+        function renderCards() {
+            const grid = document.getElementById('cardsGrid');
+            grid.innerHTML = '';
+
+            cardsData.forEach((card, index) => {
+                const article = document.createElement('article');
+                article.className = 'info-card';
+                article.setAttribute('ondblclick', `openModalAtIndex(${index})`);
+
+                article.innerHTML = `
+                    <div class="card-image-wrapper">
+                        <img src="${card.img}" alt="${card.title}" class="card-image" />
+                        <span class="double-click-hint"><i class="bi bi-arrows-angle-expand"></i> Doble clic</span>
+                    </div>
+                    <div class="card-body">
+                        <h3>${card.title}</h3>
+                        <p>${card.desc}</p>
+                    </div>
+                `;
+                grid.appendChild(article);
+            });
+        }
+
+        function openModalAtIndex(index) {
+            currentCardIndex = index;
+            isFlipped = false;
+            updateModalContent();
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('active');
+        }
+
+        function updateModalContent() {
+            const flipInner = document.getElementById('flipCardInner');
+            if (isFlipped) {
+                flipInner.classList.remove('flipped');
+                isFlipped = false;
+            }
+
+            const card = cardsData[currentCardIndex];
+            document.getElementById('modalImg').src = card.img;
+            document.getElementById('modalTitle').textContent = card.title;
+            document.getElementById('modalDesc').textContent = card.desc;
+            document.getElementById('modalBackTitle').textContent = card.title;
+            document.getElementById('modalBackDetail').textContent = card.backDetail;
+
+            document.getElementById('modalCounter').textContent = `${currentCardIndex + 1} / ${cardsData.length}`;
+        }
+
+        function flipCard() {
+            const flipInner = document.getElementById('flipCardInner');
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                flipInner.classList.add('flipped');
+            } else {
+                flipInner.classList.remove('flipped');
+            }
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % cardsData.length;
+            updateModalContent();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + cardsData.length) % cardsData.length;
+            updateModalContent();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('active');
+            const flipInner = document.getElementById('flipCardInner');
+            flipInner.classList.remove('flipped');
+            isFlipped = false;
+        }
+
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('imageModal');
+            if (modal.classList.contains('active')) {
+                if (e.key === 'ArrowRight') nextCard();
+                if (e.key === 'ArrowLeft') prevCard();
+                if (e.key === 'Escape') closeModal();
+            }
+        });
+
+        renderCards();
+    </script>
+
+    <!-- SCRIPT DE REACT BITS -->
+    <script type="text/babel">
+        function ReactBitsBanner() {
+            const [hovered, setHovered] = React.useState(false);
+
+            const containerStyle = {
+                display: 'inline-block',
+                padding: '1.5rem 3rem',
+                backgroundColor: '#0b0d10',
+                border: hovered ? '1.5px solid #FF5500' : '1.5px solid #222732',
+                borderRadius: '12px',
+                boxShadow: hovered ? '0 0 25px rgba(255, 85, 0, 0.3)' : 'none',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer'
+            };
+
+            const textStyle = {
+                fontFamily: 'Montserrat, sans-serif',
+                fontSize: '1.4rem',
+                fontWeight: '900',
+                letterSpacing: '3px',
+                color: hovered ? '#FF5500' : '#FFFFFF',
+                transition: 'color 0.3s ease'
+            };
+
+            return (
+                <div
+                    style={containerStyle}
+                    onMouseEnter={() => setHovered(true)}
+                    onMouseLeave={() => setHovered(false)}
+                >
+                    <div style={textStyle}>
+                        ⚡ STOIKO x REACT BITS COMPONENT ⚡
+                    </div>
+                    <small style={{ color: '#94A3B8', marginTop: '5px', display: 'block', fontSize: '0.8rem' }}>
+                        (Pasa el cursor para activar el efecto interactivo)
+                    </small>
+                </div>
+            );
+        }
+
+        const rootElement = document.getElementById('react-bits-root');
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(<ReactBitsBanner />);
+    </script>
+
+</body>
+</html>
